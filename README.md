@@ -46,27 +46,25 @@ At the Spoke org:
 
 ## Running the sample locally
 
-Once you get the 2 Orgs setup out of the way, create a file `.env.local` in the root of this project and populate these variables (note values are examples):
-```
-VUE_APP_SPOKE_ORG=https://acme.oktapreview.com
-VUE_APP_IDP_ID=0zb9anxb7pR1Kuxo00h7
-VUE_APP_CLIENT_ID=0oanyipx0zHnZKubW0h7
-VUE_APP_ISSUER=https://hub.okta.com/oauth2/default
-```
+Once you get the 2 Orgs setup out of the way:
 
-Variables explanation:
-| Variable | Description | Example |
-| -------- | ----------- | ------- |
-| VUE_APP_SPOKE_ORG | org url of the spoke | https://acme.oktapreview.com
-| VUE_APP_IDP_ID | At the Hub, when you finish configuring Inbound SAML, you will see an "idp id" | 0zb9anxb7pR1Kuxo00h7 | 
-| VUE_APP_CLIENT_ID | client id of the SPA app configured at the Hub (from Step A .1) | 0oanyipx0zHnZKubW0h7 |
-| VUE_APP_ISSUER | issuer uri of the auth server (from Step A .2) | https://hub.okta.com/oauth2/default | 
+1. Create a file `.env.local` (note the `.` in front of `env`) in the root of this project and populate these variables (note values are examples):
+    ```
+    VUE_APP_SPOKE_ORG=https://acme.oktapreview.com
+    VUE_APP_IDP_ID=0zb9anxb7pR1Kuxo00h7
+    VUE_APP_CLIENT_ID=0oanyipx0zHnZKubW0h7
+    VUE_APP_ISSUER=https://hub.okta.com/oauth2/default
+    ```
+
+    Variables explanation:
+    | Variable | Description | Example |
+    | -------- | ----------- | ------- |
+    | VUE_APP_SPOKE_ORG | org url of the spoke | https://acme.oktapreview.com
+    | VUE_APP_IDP_ID | At the Hub, when you finish configuring Inbound SAML, you will see an "idp id" | 0zb9anxb7pR1Kuxo00h7 | 
+    | VUE_APP_CLIENT_ID | client id of the SPA app configured at the Hub (from Step A .1) | 0oanyipx0zHnZKubW0h7 |
+    | VUE_APP_ISSUER | issuer uri of the auth server (from Step A .2) | https://hub.okta.com/oauth2/default | 
 
 
-```
-npm install
-```
+2. ```npm install```
 
-```
-npm run serve
-```
+3. ```npm run serve```
