@@ -8,8 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@okta/okta-signin-widget": "^4.1.1",
+    "@okta/okta-vue": "^2.0.0",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "semantic-ui-css": "^2.4.1",
+    "vue": "^2.6.11",
+    "vue-router": "^3.3.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.4.0",
