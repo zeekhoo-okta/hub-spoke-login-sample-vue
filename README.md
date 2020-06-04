@@ -1,7 +1,9 @@
 # hub-spoke-login-sample-vue
 
+ℹ️ This is a fork of the Okta's official Vue sample code for custom-login. Head over [here](https://github.com/okta/samples-js-vue/tree/master/custom-login) to reference the original project.
+
 ## Introduction
-For global companies, regulations require that EMEA / APAC  users' PII are stored in region. The most straightforward way to manage this requirement with Okta is to simply use multiple orgs from multiple regions. This however, leads to fragmented configuratoin, as Orgs are silo'd from each other. The challenge here is to avoid managing multiple Okta orgs.
+For global companies, regulations require that EMEA / APAC  users' PII are stored in region. The most straightforward way to manage this requirement with Okta is to simply use multiple orgs from multiple regions. This however, leads to fragmented configuration, as Orgs are silo'd from each other. The challenge here is to avoid managing multiple Okta orgs.
 
 ### Hub & Spoke
 In a Hub & Spoke arrangement, users are stored in multiple orgs. And there is one "central" org (aka the "Hub") where all the Apps, Policies, and Groups are managed. When people log in, they actually log into Okta where their user record is stored, but immediately fedarate into the Hub. From there, access policies kick in, Auth Servers mint tokens, and sessions are generated; And access to other applications are managed at the Hub.
@@ -15,10 +17,50 @@ This is sample code on how to implement seamless login from spoke to hub. The im
 #### Details:
 1. The [/authn](https://developer.okta.com/docs/reference/api/authn/) endpoint returns a [sessionToken](https://developer.okta.com/docs/reference/api/authn/#session-token)
 2. [Retrieve a session cookie by visiting a session redirect link](https://developer.okta.com/docs/guides/session-cookie/overview/#retrieving-a-session-cookie-by-visiting-a-session-redirect-link). Upon the redirect back to the SPA, the Okta session is set (for the Spoke org). 
-3. The SPA kicks off OAuth2 [/authorize](https://developer.okta.com/docs/concepts/identity-providers/) request to the Hub and provides a special [idp](https://developer.okta.com/docs/reference/api/oidc/#request-parameters) parameter. This tells the Hub that the "idp" is the Spoke. 
+    Steps 1 and 2 are implemented by the Okta Signin Widget; You'll see how this is implemented/configured this inside `/src/components/Login.vue`. Here's alittle code snippet:
+    ```js
+    this.widget.renderEl(
+        { el: "#okta-signin-container" },
+        res => {
+            res.session.setCookieAndRedirect("http://localhost:8080/oauth/init");
+        },
+    ```
+3. `/oauth/init` at the SPA will kick-off the OAuth2 [/authorize](https://developer.okta.com/docs/concepts/identity-providers/) request to the Hub. It provides the [idp](https://developer.okta.com/docs/reference/api/oidc/#request-parameters) parameter. This tells the Hub that the "idp" is the Spoke. 
+    We'll use Okta's javascript library ([AuthJs](https://github.com/okta/okta-auth-js)) to do this: Inside `/src/components/Authorize.vue`
+    ```js
+    const authClient = AuthJs({
+        issuer: config.oidc.issuer,
+        clientId: config.oidc.clientId,
+        redirectUri: config.oidc.redirectUri
+    });
+    authClient.token.getWithRedirect({
+        scopes: config.oidc.scopes,
+        idp: config.idp
+    });
+    ```
 4. Because the Spoke already has a session (Step 2), the user will not be reprompted. The SSO into the Hub automatically occurs, the user is logged into the Hub and the Hub mints tokens for the app back at the OAuth2 callback handler. 
 
-## Okta Org Setup
+## Idp discovery
+This sample also implements the Idp discovery use-case:
+![alt text](images/idp-disco.png)
+
+In `/src/components/Login.vue`
+1. Set the `requestContext` to return to `/oauth/init`
+    ```js
+    idpDiscovery: {
+        requestContext: "http://localhost:8080/oauth/init"
+    }
+    ```
+2. Handle the IDP_DISCOVERY status:
+    ```js
+    res => {
+        if (res.status === "IDP_DISCOVERY") {
+            res.idpDiscovery.redirectToIdp(); 
+    ```
+
+---
+
+## Setup
 ### A. Configure the Hub
 At the Hub org:
 1. Add an Application of type SPA:
